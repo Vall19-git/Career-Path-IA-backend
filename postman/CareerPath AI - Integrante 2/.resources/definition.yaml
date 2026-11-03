@@ -1,0 +1,12 @@
+$kind: collection
+description: Pruebas de Profiles y Favorites
+variables:
+  baseUrl: http://localhost:4000
+scripts:
+  - type: http:afterResponse
+    code: |-
+      const esperado = pm.request.method === 'POST' ? 201 : 200;
+      pm.test('Estado HTTP esperado', function () {
+        pm.response.to.have.status(esperado);
+      });
+    language: text/javascript

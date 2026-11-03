@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/favorites"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"user_id":1,"career_id":2}'
+order: 1000

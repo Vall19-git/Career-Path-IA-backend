@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/profiles"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"user_id":1,"intereses":"Programación","habilidades":"JavaScript"}'
+order: 1000
