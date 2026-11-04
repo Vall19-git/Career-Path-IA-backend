@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/careers"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"nombre":"Tecnicatura Universitaria en Programación","duracion":"2 años","modalidad":"Presencial","descripcion":"Carrera orientada al desarrollo de software."}'
+order: 1000

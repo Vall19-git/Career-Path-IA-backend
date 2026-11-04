@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/careers/1"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"modalidad":"Presencial"}'
+order: 4000

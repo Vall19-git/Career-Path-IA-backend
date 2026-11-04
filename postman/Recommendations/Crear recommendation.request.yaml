@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/recommendations"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"user_id":1,"career_id":1,"puntaje":95,"resultado":"Compatibilidad muy alta"}'
+order: 1000

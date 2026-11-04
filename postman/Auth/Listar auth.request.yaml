@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/auth"
+method: GET
+order: 2000

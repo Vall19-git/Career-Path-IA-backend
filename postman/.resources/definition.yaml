@@ -1,7 +1,7 @@
 $kind: collection
-description: Pruebas de Profiles y Favorites
+description: Colección de pruebas de la API REST de CareerPath AI
 variables:
-  baseUrl: http://localhost:4000
+  baseUrl: http://localhost:3000
 scripts:
   - type: http:afterResponse
     code: |-
