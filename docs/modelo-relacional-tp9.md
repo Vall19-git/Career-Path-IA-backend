@@ -1,8 +1,10 @@
-# CareerPath AI — Modelo relacional TP9 (tres integrantes)
+# CareerPath AI — Modelo relacional
 
-Este documento representa **solamente las cinco tablas implementadas y verificadas** de Valentina, integrante 2 y Morena Marina. No modifica ni desarrolla tablas, módulos ni solicitudes del integrante 4.
+Este documento describe el modelo relacional implementado para el backend de CareerPath AI utilizando Supabase PostgreSQL.
 
-## Diagrama entidad-relación (Mermaid)
+El esquema actual está compuesto por ocho tablas relacionadas entre sí para gestionar usuarios, perfiles, carreras, favoritos, recomendaciones, cuestionarios vocacionales, respuestas y rutas de aprendizaje.
+
+## Diagrama entidad-relación
 
 ```mermaid
 erDiagram
@@ -11,18 +13,24 @@ erDiagram
     CAREERS ||--o{ FAVORITES : "es favorita"
     USERS ||--o{ RECOMMENDATIONS : "recibe"
     CAREERS ||--o{ RECOMMENDATIONS : "es recomendada"
+    USERS ||--o{ TEST_ANSWERS : "responde"
+    TEST_QUESTIONS ||--o{ TEST_ANSWERS : "recibe respuestas"
+    USERS ||--o{ LEARNING_ROUTES : "sigue"
+    CAREERS ||--o{ LEARNING_ROUTES : "orienta"
 
     USERS {
       bigint id PK
       varchar nombre "NOT NULL"
       varchar email "UNIQUE NOT NULL"
     }
+
     PROFILES {
       bigint id PK
       bigint user_id FK
       varchar intereses "NOT NULL"
       varchar habilidades "NOT NULL"
     }
+
     CAREERS {
       bigint id PK
       varchar nombre "UNIQUE NOT NULL"
@@ -30,11 +38,13 @@ erDiagram
       varchar modalidad "NOT NULL"
       text descripcion "NOT NULL"
     }
+
     FAVORITES {
       bigint id PK
       bigint user_id FK
       bigint career_id FK
     }
+
     RECOMMENDATIONS {
       bigint id PK
       bigint user_id FK
@@ -42,37 +52,91 @@ erDiagram
       numeric puntaje "0 a 100"
       varchar resultado "NOT NULL"
     }
+
+    TEST_QUESTIONS {
+      bigint id PK
+      text enunciado "NOT NULL"
+      varchar categoria "NOT NULL"
+    }
+
+    TEST_ANSWERS {
+      bigint id PK
+      bigint user_id FK
+      bigint question_id FK
+      varchar respuesta "NOT NULL"
+    }
+
+    LEARNING_ROUTES {
+      bigint id PK
+      bigint user_id FK
+      bigint career_id FK
+      varchar estado "NOT NULL"
+      numeric progreso "0 a 100"
+    }
 ```
 
 ## Relaciones y restricciones
 
 | Tabla | Clave foránea | Referencia | Restricción destacada |
 |---|---|---|---|
-| profiles | user_id | users(id) | UNIQUE(user_id): un perfil por usuario |
+| profiles | user_id | users(id) | UNIQUE(user_id) |
 | favorites | user_id | users(id) | UNIQUE(user_id, career_id) |
 | favorites | career_id | careers(id) | UNIQUE(user_id, career_id) |
 | recommendations | user_id | users(id) | UNIQUE(user_id, career_id) |
 | recommendations | career_id | careers(id) | puntaje entre 0 y 100 |
+| test_answers | user_id | users(id) | UNIQUE(user_id, question_id) |
+| test_answers | question_id | test_questions(id) | UNIQUE(user_id, question_id) |
+| learning_routes | user_id | users(id) | UNIQUE(user_id, career_id) |
+| learning_routes | career_id | careers(id) | progreso entre 0 y 100 |
 
-En las cinco relaciones se usa eliminación en cascada para los registros dependientes. Los identificadores del esquema de prueba son `BIGINT` y los registros se crearon en el esquema `public` de Supabase PostgreSQL.
+Las relaciones utilizan claves foráneas para mantener la integridad referencial del modelo. Los registros dependientes configurados con `ON DELETE CASCADE` se eliminan automáticamente cuando se elimina su registro principal correspondiente.
 
-## Alcance y limitaciones
+Los identificadores utilizan el tipo `BIGINT` y las tablas se encuentran dentro del esquema `public` de Supabase PostgreSQL.
 
-- Se verificaron **cinco registros por tabla**: 25 registros en total.
-- Los cinco vínculos de clave foránea figuran en `information_schema`.
-- `public.users` usa **usuarios ficticios de prueba**; no implementa registro ni autenticación real.
-- Se habilitó RLS en estas tablas y **no se crean políticas públicas** en los scripts de esta etapa.
-- **No se representa ni desarrolla** la parte del integrante 4 por indicación del equipo; corresponde incorporarla al modelo conjunto cuando esa persona termine su trabajo.
-- Los servicios generados mediante Nest CLI siguen devolviendo respuestas de ejemplo y **aún no consultan Supabase**.
+## Datos de prueba y validación
 
-## Orden de los scripts SQL para reproducir el esquema
+Se cargaron y verificaron cinco registros en cada una de las ocho tablas principales, alcanzando un total de 40 registros de prueba.
 
-1. `sql/00-crear-users-demo.sql` (solo pruebas locales; se sustituye por el `users` definitivo de Valentina).
-2. `sql/04-crear-tablas-careers-recommendations.sql`.
-3. `sql/01-crear-tablas-profiles-favorites.sql`.
-4. `sql/05-insertar-carreras-recomendaciones.sql`.
-5. `sql/02-insertar-registros.sql`.
-6. `sql/06-verificar-carreras-recomendaciones.sql`.
-7. `sql/03-verificar-datos.sql`.
+Las verificaciones realizadas incluyen:
 
-Los scripts 01–06 deben ser los de **PostgreSQL/Supabase**, no las versiones previas de MySQL. Si se usa la tabla definitiva de `users`, confirmar previamente que la clave primaria tenga el tipo esperado por las claves foráneas.
+- existencia de los registros cargados;
+- integridad de las claves foráneas;
+- ausencia de relaciones huérfanas;
+- control de registros duplicados;
+- validación de valores de progreso entre 0 y 100;
+- validación de puntajes dentro del rango establecido.
+
+La tabla `users` utiliza registros ficticios destinados exclusivamente a pruebas del esquema.
+
+## Seguridad
+
+Las tablas utilizan Row Level Security (RLS) dentro de Supabase.
+
+En esta etapa no se definen políticas públicas de acceso desde los scripts SQL. Las políticas definitivas deberán implementarse junto con el sistema de autenticación y autorización del backend.
+
+## Persistencia
+
+El modelo relacional se encuentra creado y validado en Supabase PostgreSQL.
+
+Los recursos REST generados mediante NestJS mantienen actualmente servicios provisionales y todavía no realizan operaciones de persistencia directa sobre Supabase.
+
+La integración entre los servicios NestJS y la base de datos forma parte de una etapa posterior del desarrollo.
+
+## Orden de ejecución de los scripts SQL
+
+Para reproducir el esquema de base de datos se recomienda ejecutar los scripts en el siguiente orden:
+
+1. `sql/00-crear-users-demo.sql`
+2. `sql/04-crear-tablas-careers-recommendations.sql`
+3. `sql/01-crear-tablas-profiles-favorites.sql`
+4. `sql/07-crear-tablas-test-rutas.sql`
+5. `sql/05-insertar-carreras-recomendaciones.sql`
+6. `sql/02-insertar-registros.sql`
+7. `sql/08-insertar-test-rutas.sql`
+8. `sql/06-verificar-carreras-recomendaciones.sql`
+9. `sql/03-verificar-datos.sql`
+10. `sql/09-verificar-test-rutas.sql`
+
+Los scripts están preparados para PostgreSQL y Supabase.
+
+Antes de utilizar una estructura definitiva de `users`, debe verificarse que su clave primaria mantenga compatibilidad con las claves foráneas utilizadas por las demás tablas.

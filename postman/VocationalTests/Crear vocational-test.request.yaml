@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/vocational-tests"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"enunciado":"¿Te interesa trabajar con tecnología y programación?","categoria":"Tecnología"}'
+order: 1000

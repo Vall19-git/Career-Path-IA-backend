@@ -13,6 +13,9 @@ import { FavoritesModule } from '../favorites/favorites.module.js';
 import { CareersModule } from '../careers/careers.module.js';
 import { RecommendationsModule } from '../recommendations/recommendations.module.js';
 
+import { VocationalTestsModule } from '../vocational-tests/vocational-tests.module.js';
+import { LearningRoutesModule } from '../learning-routes/learning-routes.module.js';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +30,9 @@ import { RecommendationsModule } from '../recommendations/recommendations.module
 
     CareersModule,
     RecommendationsModule,
+
+    VocationalTestsModule,
+    LearningRoutesModule,
   ],
 
   controllers: [AppController],

@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/learning-routes"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"user_id":1,"career_id":1,"estado":"En progreso","progreso":40}'
+order: 1000
