@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/recommendations"
+method: GET
+order: 2000

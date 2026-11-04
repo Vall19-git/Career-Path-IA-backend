@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{baseUrl}}/recommendations/1"
+method: PATCH
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: '{"puntaje":90,"resultado":"Compatibilidad alta"}'
+order: 4000

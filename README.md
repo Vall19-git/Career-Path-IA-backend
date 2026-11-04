@@ -16,8 +16,9 @@ Este repositorio corresponde al backend de la aplicación, desarrollado con Nest
 - npm
 - Git y GitHub
 - Postman (para documentación y pruebas de la API)
+- Supabase (PostgreSQL), para la base relacional del TP9
 
-La base de datos relacional se definirá y configurará durante el desarrollo del proyecto.
+En Supabase se crearon y comprobaron cinco tablas de la parte de Valentina, integrante 2 e integrante 3. La conexión desde los servicios NestJS sigue pendiente.
 
 ## 2. Estructura del proyecto
 
@@ -42,6 +43,9 @@ career-path-ia-backend/
 │       ├── recommendations/
 │       └── learning-routes/
 ├── test/
+├── sql/
+├── postman/
+├── docs/
 ├── .gitignore
 ├── package.json
 ├── package-lock.json
@@ -63,9 +67,7 @@ career-path-ia-backend/
 | recommendations | Generación de recomendaciones según los resultados obtenidos. |
 | learning-routes | Gestión de rutas de aprendizaje y seguimiento del progreso. |
 
-Los recursos `auth` y `users` ya fueron generados mediante Nest CLI con estructura REST y operaciones CRUD.
-
-Los demás módulos están definidos como carpetas iniciales y serán desarrollados por los integrantes del equipo.
+Se generaron los recursos REST/CRUD iniciales de `auth`, `users`, `profiles`, `favorites`, `careers` y `recommendations`. La parte asignada al integrante 4 queda fuera de esta entrega parcial y a su cargo. Los controladores y servicios existentes son estructuras provisionales, sin persistencia real.
 
 ## 3. Instalación del proyecto
 
@@ -114,7 +116,7 @@ Las variables previstas son:
 | DATABASE_URL | Cadena de conexión con la base de datos relacional. |
 | API_BASE_URL | URL base prevista para la API. |
 
-Para las pruebas locales actuales se utiliza el puerto `4000`.
+Para las pruebas locales verificadas se utiliza el puerto `3000`.
 
 La variable `PORT` es leída por el servidor al iniciar la aplicación. La conexión con la base de datos y el uso definitivo de `API_BASE_URL` quedan pendientes de implementación.
 
@@ -122,7 +124,7 @@ La variable `PORT` es leída por el servidor al iniciar la aplicación. La conex
 
 Los archivos `.env` contienen configuraciones locales que pueden incluir información sensible.
 
-Por indicación de la profesora, los archivos `.env` y `.env.example` están excluidos del repositorio mediante `.gitignore`.
+Por indicación del equipo, los archivos `.env` y `.env.example` permanecen excluidos del repositorio. Cada integrante configura sus variables localmente sin publicar credenciales.
 
 Cada integrante debe configurar sus propias variables sin publicar contraseñas ni credenciales.
 
@@ -136,9 +138,9 @@ npm run start:dev
 
 Este comando inicia NestJS en modo desarrollo y permite detectar cambios en los archivos.
 
-Con `PORT=4000` configurado correctamente, la aplicación estará disponible en:
+Con `PORT=3000` configurado correctamente, la aplicación estará disponible en:
 
-http://localhost:4000
+http://localhost:3000
 
 La ruta principal devuelve actualmente:
 
@@ -183,12 +185,16 @@ NestJS genera automáticamente los controladores, servicios, módulos, DTO, enti
 
 ### Recursos creados
 
-Actualmente se generaron:
+Actualmente se generaron y registraron:
 
 - `auth`
 - `users`
+- `profiles`
+- `favorites`
+- `careers`
+- `recommendations`
 
-Ambos recursos se encuentran registrados en el arreglo `imports` de `AppModule`.
+Cada uno cuenta con las cinco rutas REST/CRUD iniciales de Nest CLI, que todavía devuelven respuestas provisionales.
 
 ### Endpoints iniciales de users
 
@@ -221,14 +227,18 @@ Actualmente se registraron:
 - `ConfigModule`
 - `AuthModule`
 - `UsersModule`
+- `ProfilesModule`
+- `FavoritesModule`
+- `CareersModule`
+- `RecommendationsModule`
 
-A medida que los integrantes generen los demás recursos, sus módulos deberán incorporarse a `AppModule`.
+Los recursos del integrante 4 serán integrados por su responsable; no forman parte de los cambios aquí documentados.
 
 El archivo `main.ts` permanece directamente dentro de `src`, ya que es el punto de entrada de la aplicación.
 
 ## 8. Diseño de la base de datos
 
-CareerPath AI utilizará una base de datos relacional para organizar la información del sistema.
+CareerPath AI utiliza Supabase PostgreSQL para el modelo relacional de esta etapa.
 
 El diseño deberá contemplar las entidades necesarias para usuarios, perfiles, carreras, cuestionarios, respuestas, recomendaciones, favoritos y rutas de aprendizaje.
 
@@ -243,7 +253,7 @@ Las actividades correspondientes incluyen:
 7. Cargar un mínimo de cinco registros por tabla.
 8. Verificar la integridad y coherencia de los datos.
 
-La implementación de la base de datos y su conexión definitiva con NestJS se encuentran pendientes.
+En Supabase se comprobaron cinco tablas (`users`, `profiles`, `favorites`, `careers`, `recommendations`), cinco registros en cada una y cinco relaciones mediante claves foráneas. La tabla `users` contiene datos ficticios y es un esquema inicial sujeto a revisión por Valentina. La persistencia real desde NestJS y las políticas RLS para operaciones de usuarios siguen pendientes. Ver `docs/modelo-relacional-tp9.md`.
 
 ## 9. Documentación y pruebas con Postman
 
@@ -257,7 +267,7 @@ Las pruebas contemplarán:
 - Comprobación del comportamiento de los recursos.
 - Registro de los resultados obtenidos.
 
-La colección de Postman se desarrollará a medida que se implementen los recursos y sus funcionalidades.
+La colección de Postman se organiza directamente por recurso en `postman/`, sin la carpeta intermedia del integrante 2. Contiene plantillas de cinco solicitudes HTTP por recurso para los seis módulos registrados (30 solicitudes en total). Su existencia no prueba persistencia real. Ver `docs/evidencias-tp9.md`.
 
 ## 10. Organización del trabajo con Git y GitHub
 
@@ -308,32 +318,23 @@ https://github.com/Vall19-git/Career-Path-IA-backend
 
 ## 12. Estado actual del proyecto
 
-### Completado
+### Completado y verificado
 
-- Creación del proyecto con NestJS 12.
-- Configuración inicial de TypeScript y npm.
-- Organización de la carpeta `src/modules/app`.
-- Definición de ocho recursos del sistema.
-- Generación de los recursos `auth` y `users`.
-- Registro de ambos recursos en `AppModule`.
-- Instalación y configuración inicial de `@nestjs/config`.
-- Preparación de las variables de entorno locales.
-- Verificación de compilación mediante `npm run build`.
-- Ejecución correcta del servidor mediante `npm run start:dev`.
-- Verificación de la respuesta del backend en `localhost:4000`.
-- Organización inicial de las ramas del repositorio.
+- Backend NestJS 12 con seis recursos REST/CRUD generados y registrados: auth, users, profiles, favorites, careers y recommendations.
+- Servidor local en http://localhost:3000; respuestas GET de profiles, favorites, careers y recommendations observadas con estado HTTP 200.
+- Base Supabase PostgreSQL con cinco tablas, 25 registros ficticios y cinco claves foráneas comprobadas.
+- SQL separado en scripts reproducibles (con tabla de usuarios de demostración identificada).
+- Colección Postman organizada por recurso: 30 solicitudes preparadas.
+- `npm run build` correcto; `npm test` con 13/13 pruebas aprobadas; `npm run lint` sin errores y con 8 advertencias.
+- Diagramas y evidencias parciales en `docs/`.
 
-### Pendiente
+### Pendiente / fuera de alcance de esta etapa
 
-- Generación de los seis recursos restantes.
-- Registro de los demás módulos en `AppModule`.
-- Diseño e implementación de la base de datos relacional.
-- Carga y verificación de registros de prueba.
-- Conexión del backend con la base de datos.
-- Implementación de la lógica de negocio.
-- Validaciones y tratamiento de errores.
-- Organización de la colección de Postman.
-- Documentación y ejecución de las pruebas de los endpoints.
+- Conectar los servicios de NestJS a Supabase para persistencia real.
+- Autenticación real, validaciones, permisos y políticas RLS según el diseño definitivo.
+- Revisar y aprobar la estructura de `users` con Valentina, antes de tratarla como definitiva.
+- Probar todas las solicitudes de Postman de forma manual.
+- Recursos y tablas del integrante 4: su responsable trabaja esa parte por separado.
 
 ## 13. Trabajo Práctico N.º 9
 
