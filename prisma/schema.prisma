@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model careers {
+  id              BigInt            @id @default(autoincrement())
+  nombre          String            @unique @db.VarChar(150)
+  duracion        String            @db.VarChar(50)
+  modalidad       String            @db.VarChar(50)
+  descripcion     String
+  favorites       favorites[]
+  learning_routes learning_routes[]
+  recommendations recommendations[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model favorites {
+  id        BigInt  @id @default(autoincrement())
+  user_id   BigInt
+  career_id BigInt
+  careers   careers @relation(fields: [career_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users     users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, career_id], map: "uq_favorites_user_career")
+  @@index([career_id], map: "idx_favorites_career_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model learning_routes {
+  id        BigInt  @id @default(autoincrement())
+  user_id   BigInt
+  career_id BigInt
+  estado    String  @db.VarChar(50)
+  progreso  Decimal @default(0) @db.Decimal(5, 2)
+  careers   careers @relation(fields: [career_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users     users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, career_id], map: "uq_learning_routes_user_career")
+  @@index([career_id], map: "idx_learning_routes_career_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model profiles {
+  id          BigInt @id @default(autoincrement())
+  user_id     BigInt @unique
+  intereses   String @db.VarChar(255)
+  habilidades String @db.VarChar(255)
+  users       users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model recommendations {
+  id        BigInt  @id @default(autoincrement())
+  user_id   BigInt
+  career_id BigInt
+  puntaje   Decimal @db.Decimal(5, 2)
+  resultado String  @db.VarChar(100)
+  careers   careers @relation(fields: [career_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users     users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, career_id], map: "uq_recommendations_user_career")
+  @@index([career_id], map: "idx_recommendations_career_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model test_answers {
+  id             BigInt         @id @default(autoincrement())
+  user_id        BigInt
+  question_id    BigInt
+  respuesta      String         @db.VarChar(255)
+  test_questions test_questions @relation(fields: [question_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users          users          @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, question_id], map: "uq_test_answers_user_question")
+  @@index([question_id], map: "idx_test_answers_question_id")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model test_questions {
+  id           BigInt         @id @default(autoincrement())
+  enunciado    String
+  categoria    String         @db.VarChar(100)
+  test_answers test_answers[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id              BigInt            @id @default(autoincrement())
+  nombre          String            @db.VarChar(120)
+  email           String            @unique @db.VarChar(180)
+  favorites       favorites[]
+  learning_routes learning_routes[]
+  profiles        profiles?
+  recommendations recommendations[]
+  test_answers    test_answers[]
+}
