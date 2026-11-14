@@ -15,12 +15,13 @@ import { RecommendationsModule } from '../recommendations/recommendations.module
 
 import { VocationalTestsModule } from '../vocational-tests/vocational-tests.module.js';
 import { LearningRoutesModule } from '../learning-routes/learning-routes.module.js';
-
+import { PrismaModule } from '../../prisma/prisma.module.js';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    PrismaModule,
 
     AuthModule,
     UsersModule,
