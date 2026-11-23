@@ -1,18 +1,33 @@
-import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+} from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto.js';
+import { UsersService } from './users.service.js';
 
 @Controller('users')
 export class UsersController {
-  
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    // Si llega a esta línea, los datos ya están validados y son seguros
-    return 'Usuario creado';
+  constructor(private readonly usersService: UsersService) {}
+
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return 'Usuario actualizado con ID: ' + id;
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(id, updateUserDto);
   }
 }
