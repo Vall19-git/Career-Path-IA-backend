@@ -1,20 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
+
+import { Test } from '@nestjs/testing';
+import { describe, it, expect, vi } from 'vitest';
+
 import { AuthController } from './auth.controller.js';
-import { AuthService } from './auth.service.js';
+import { RegistrationService } from './registration.service.js';
+import { LoginService } from './login.service.js';
 
 describe('AuthController', () => {
-  let controller: AuthController;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+  it('debe estar definido correctamente', async () => {
+    const module = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [AuthService],
+      providers: [
+        {
+          provide: RegistrationService,
+          useValue: { register: vi.fn() },
+        },
+        {
+          provide: LoginService,
+          useValue: { login: vi.fn() },
+        },
+      ],
     }).compile();
 
-    controller = module.get<AuthController>(AuthController);
-  });
+    const controller = module.get<AuthController>(AuthController);
 
-  it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 });
+
