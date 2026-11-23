@@ -1,4 +1,29 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto.js';
+import { Transform } from 'class-transformer';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class UpdateUserDto {
+  @IsOptional()
+  @IsString({ message: 'El nombre debe ser un texto.' })
+  @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
+  @MaxLength(120, {
+    message: 'El nombre no puede superar los 120 caracteres.',
+  })
+  nombre?: string;
+
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
+  @IsString({ message: 'El correo electrónico debe ser un texto.' })
+  @IsEmail({}, { message: 'Ingresá un correo electrónico válido.' })
+  @MaxLength(180, {
+    message: 'El correo no puede superar los 180 caracteres.',
+  })
+  email?: string;
+}
