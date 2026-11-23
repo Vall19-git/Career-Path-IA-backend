@@ -3,7 +3,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 
-import type { PrismaService } from '../../prisma/prisma.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 
 import { RegisterAuthDto } from './dto/register-auth.dto.js';
 import { PasswordUtil } from './password.util.js';
