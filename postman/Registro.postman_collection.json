@@ -1,0 +1,201 @@
+
+{
+  "info": {
+    "name": "CareerPath AI - TP12 Registro",
+    "description": "Pruebas del registro de usuarios. La ruta debe estar integrada por Valentina antes de ejecutar las solicitudes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Registro correcto",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Usuario de prueba\",\n  \"email\": \"usuario.prueba@example.com\",\n  \"password\": \"ClaveSegura123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Registro correcto', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "pm.test('No devuelve datos sensibles', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.user).to.not.have.property('password');",
+              "    pm.expect(body.user).to.not.have.property('passwordHash');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Correo duplicado",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Otro Usuario\",\n  \"email\": \"usuario.prueba@example.com\",\n  \"password\": \"ClaveSegura123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rechaza correo duplicado', function () {",
+              "    pm.expect(pm.response.code).to.equal(409);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Email inválido",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Usuario de prueba\",\n  \"email\": \"correo-no-valido\",\n  \"password\": \"ClaveSegura123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rechaza email inválido', function () {",
+              "    pm.expect(pm.response.code).to.equal(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Contraseña corta",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Usuario de prueba\",\n  \"email\": \"otro@example.com\",\n  \"password\": \"123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rechaza contraseña corta', function () {",
+              "    pm.expect(pm.response.code).to.equal(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Nombre faltante",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"faltante@example.com\",\n  \"password\": \"ClaveSegura123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rechaza nombre faltante', function () {",
+              "    pm.expect(pm.response.code).to.equal(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Todos los campos vacíos",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/register"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Rechaza campos vacíos', function () {",
+              "    pm.expect(pm.response.code).to.equal(400);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}
