@@ -1,9 +1,10 @@
+
 $kind: http-request
-url: "{{baseUrl}}/auth"
+url: "http://localhost:4000/auth/register"
 method: POST
 headers:
   Content-Type: application/json
 body:
   type: text
-  content: '{"email":"usuario@careerpath.invalid"}'
+  content: '{"nombre":"Usuario Prueba","email":"usuario.nuevo@example.com","password":"{{testPassword}}"}'
 order: 1000
