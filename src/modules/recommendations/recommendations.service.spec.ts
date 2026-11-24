@@ -1,6 +1,6 @@
-import { vi } from 'vitest';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { vi } from 'vitest';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { RecommendationsService } from './recommendations.service.js';
 
@@ -9,7 +9,6 @@ const recommendation = {
   user_id: 1n,
   career_id: 2n,
   puntaje: { toNumber: () => 87.5 },
-  resultado: 'Afinidad alta',
 };
 
 const serialized = {
@@ -17,14 +16,12 @@ const serialized = {
   user_id: '1',
   career_id: '2',
   puntaje: 87.5,
-  resultado: 'Afinidad alta',
 };
 
 const createDto = {
   user_id: 1,
   career_id: 2,
   puntaje: 87.5,
-  resultado: 'Afinidad alta',
 };
 
 describe('RecommendationsService', () => {
@@ -55,8 +52,12 @@ describe('RecommendationsService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [RecommendationsService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        RecommendationsService,
+        { provide: PrismaService, useValue: prisma },
+      ],
     }).compile();
+
     service = module.get<RecommendationsService>(RecommendationsService);
   });
 
@@ -70,43 +71,57 @@ describe('RecommendationsService', () => {
     prisma.recommendations.create.mockResolvedValue(recommendation);
 
     await expect(service.create(createDto)).resolves.toEqual(serialized);
+
     expect(prisma.recommendations.create).toHaveBeenCalledWith({
-      data: { user_id: 1n, career_id: 2n, puntaje: '87.5', resultado: 'Afinidad alta' },
+      data: {
+        user_id: 1n,
+        career_id: 2n,
+        puntaje: '87.5',
+      },
     });
   });
 
   it('rechaza un usuario inexistente (404)', async () => {
     prisma.users.findUnique.mockResolvedValue(null);
     prisma.careers.findUnique.mockResolvedValue({ id: 2n });
+
     await expect(service.create(createDto)).rejects.toThrow(NotFoundException);
+
     expect(prisma.recommendations.create).not.toHaveBeenCalled();
   });
 
   it('rechaza una carrera inexistente (404)', async () => {
     prisma.users.findUnique.mockResolvedValue({ id: 1n });
     prisma.careers.findUnique.mockResolvedValue(null);
-    await expect(service.create(createDto)).rejects.toThrow('Carrera no encontrada');
+
+    await expect(service.create(createDto)).rejects.toThrow(
+      'Carrera no encontrada',
+    );
   });
 
   it('devuelve 409 al repetir la combinación usuario/carrera', async () => {
     prisma.users.findUnique.mockResolvedValue({ id: 1n });
     prisma.careers.findUnique.mockResolvedValue({ id: 2n });
     prisma.recommendations.create.mockRejectedValue({ code: 'P2002' });
+
     await expect(service.create(createDto)).rejects.toThrow(ConflictException);
   });
 
   it('lista las recomendaciones', async () => {
     prisma.recommendations.findMany.mockResolvedValue([recommendation]);
+
     await expect(service.findAll()).resolves.toEqual([serialized]);
   });
 
   it('busca una recomendación por ID', async () => {
     prisma.recommendations.findUnique.mockResolvedValue(recommendation);
+
     await expect(service.findOne(6n)).resolves.toEqual(serialized);
   });
 
   it('devuelve 404 al buscar un ID inexistente', async () => {
     prisma.recommendations.findUnique.mockResolvedValue(null);
+
     await expect(service.findOne(999n)).rejects.toThrow(NotFoundException);
   });
 
@@ -114,23 +129,31 @@ describe('RecommendationsService', () => {
     prisma.recommendations.findUnique.mockResolvedValue(recommendation);
     prisma.users.findUnique.mockResolvedValue({ id: 1n });
     prisma.careers.findUnique.mockResolvedValue({ id: 2n });
+
     prisma.recommendations.update.mockResolvedValue({
       ...recommendation,
       puntaje: { toNumber: () => 92 },
     });
+
     await expect(service.update(6n, { puntaje: 92 })).resolves.toEqual({
       ...serialized,
       puntaje: 92,
     });
+
     expect(prisma.recommendations.update).toHaveBeenCalledWith({
       where: { id: 6n },
-      data: { puntaje: '92' },
+      data: {
+        puntaje: '92',
+      },
     });
   });
 
   it('devuelve 404 al actualizar una recomendación inexistente', async () => {
     prisma.recommendations.findUnique.mockResolvedValue(null);
-    await expect(service.update(999n, { puntaje: 55 })).rejects.toThrow(NotFoundException);
+
+    await expect(service.update(999n, { puntaje: 55 })).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('devuelve 409 cuando una actualización duplica usuario/carrera', async () => {
@@ -138,16 +161,21 @@ describe('RecommendationsService', () => {
     prisma.users.findUnique.mockResolvedValue({ id: 1n });
     prisma.careers.findUnique.mockResolvedValue({ id: 2n });
     prisma.recommendations.update.mockRejectedValue({ code: 'P2002' });
-    await expect(service.update(6n, { career_id: 2 })).rejects.toThrow(ConflictException);
+
+    await expect(service.update(6n, { career_id: 2 })).rejects.toThrow(
+      ConflictException,
+    );
   });
 
   it('elimina una recomendación por ID', async () => {
     prisma.recommendations.delete.mockResolvedValue(recommendation);
+
     await expect(service.remove(6n)).resolves.toEqual(serialized);
   });
 
   it('devuelve 404 al eliminar una recomendación inexistente', async () => {
     prisma.recommendations.delete.mockRejectedValue({ code: 'P2025' });
+
     await expect(service.remove(999n)).rejects.toThrow(NotFoundException);
   });
 });
