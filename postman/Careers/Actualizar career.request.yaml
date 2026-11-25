@@ -2,6 +2,7 @@ $kind: http-request
 url: "{{baseUrl}}/careers/1"
 method: PATCH
 headers:
+  Authorization: "Bearer {{accessToken}}"
   Content-Type: application/json
 body:
   type: text

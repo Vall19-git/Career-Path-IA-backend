@@ -1,14 +1,17 @@
-
 {
   "info": {
-    "name": "CareerPath AI - TP12 Registro",
-    "description": "Pruebas del registro de usuarios. La ruta debe estar integrada por Valentina antes de ejecutar las solicitudes.",
+    "name": "CareerPath IA - TP12 Autenticación",
+    "description": "Registro y login reales con JWT. Configurar baseUrl y usar un correo nuevo en cada alta correcta.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:3000"
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
     }
   ],
   "item": [
@@ -193,6 +196,39 @@
               "});"
             ],
             "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Login correcto",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"usuario.prueba@example.com\",\n  \"password\": \"ClaveSegura123\"\n}"
+        },
+        "url": "{{baseUrl}}/auth/login"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Login correcto: 200 OK', function () { pm.response.to.have.status(200); });",
+              "pm.test('Devuelve JWT', function () {",
+              "  const body = pm.response.json();",
+              "  pm.expect(body.access_token).to.be.a('string').and.not.empty;",
+              "  pm.collectionVariables.set('accessToken', body.access_token);",
+              "});"
+            ]
           }
         }
       ]

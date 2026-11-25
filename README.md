@@ -203,7 +203,7 @@ Cada integrante debe configurar sus variables localmente y evitar publicar:
 - Claves JWT.
 - Tokens de autenticación.
 
-La variable `JWT_SECRET` es necesaria para que el módulo de autenticación pueda generar tokens firmados.
+La variable `JWT_SECRET` es necesaria para que el módulo de autenticación pueda generar y verificar tokens firmados. Debe configurarse antes de iniciar el servidor y de ejecutar las pruebas E2E.
 
 ---
 
@@ -285,7 +285,7 @@ El módulo `auth` permite registrar usuarios e iniciar sesión.
 | Método | Endpoint | Función |
 |---|---|---|
 | POST | /auth/register | Registrar un nuevo usuario. |
-| POST | /auth/login | Iniciar sesión y obtener un JWT. |
+| POST | /auth/login | Iniciar sesión y obtener un JWT (`200 OK`). |
 
 #### Registro de usuarios
 
@@ -341,6 +341,10 @@ Ejemplo de estructura de respuesta:
 ```
 
 El token incluye información de identificación del usuario, como `sub` y `email`, y se configura con una duración de una hora.
+
+El inicio de sesión devuelve `200 OK`; el registro exitoso devuelve `201 Created`. Los endpoints fuera de `/auth` y de la ruta principal `/` requieren `Authorization: Bearer <JWT>`. Las rutas `GET /users/:id` y `PATCH /users/:id` también comprueban que el `id` coincida con `sub` del JWT.
+
+**Límite de seguridad conocido:** `GET /users` sigue listando datos públicos (`id`, `nombre`, `email`) para usuarios autenticados, y los demás módulos todavía no restringen todas las operaciones por propiedad de registro. Antes de publicar el sistema se debe definir autorización por usuario o rol y aplicarla a todas las entidades relacionadas. La conexión privilegiada de Prisma no debe considerarse protegida por el RLS de Supabase automáticamente.
 
 ### 6.2. Módulo Users
 
@@ -514,6 +518,9 @@ El historial incluye:
 
 - `0_init`: migración inicial del modelo relacional.
 - `20261122_add_users_password_hash`: incorporación del campo de contraseña cifrada.
+- `20261124010906_normalize_database_3fn`: eliminación de `learning_routes.estado` y `recommendations.resultado`.
+
+**Advertencia:** esta última migración utiliza `DROP COLUMN`, por lo que elimina los valores previamente almacenados en esas columnas. Su recuperación requeriría un respaldo histórico. Eliminar columnas derivadas puede reducir redundancia, pero **no demuestra por sí solo que el esquema completo esté en tercera forma normal**; la justificación depende de las dependencias funcionales y las reglas de negocio.
 
 La migración de `password_hash` ya fue aplicada correctamente en la base de datos compartida de Supabase.
 
@@ -589,20 +596,20 @@ Estas peticiones reemplazan las operaciones CRUD de ejemplo que se habían gener
 | Caso probado | Resultado |
 |---|---|
 | Registro correcto | 201 Created |
-| Inicio de sesión correcto | 201 Created |
+| Inicio de sesión correcto | 200 OK |
 | Contraseña incorrecta | 401 Unauthorized |
 | Correo electrónico duplicado | 409 Conflict |
 | Correo electrónico inválido | 400 Bad Request |
 
 Las pruebas confirmaron el funcionamiento real del registro y login utilizando Prisma, bcrypt, JWT y Supabase.
 
-El estado `201 Created` del login corresponde al comportamiento actual de NestJS. Puede ajustarse posteriormente a `200 OK` mediante configuración explícita.
+El login utiliza `@HttpCode(HttpStatus.OK)` para devolver `200 OK`, mientras que el registro conserva `201 Created`. La colección Postman valida cada caso por separado.
 
 ### Alcance de las pruebas
 
 Las solicitudes manuales de Postman verifican el comportamiento HTTP de los endpoints ejecutados.
 
-No debe interpretarse que todas las rutas están protegidas por JWT: actualmente el módulo `auth` genera tokens, pero no se ha incorporado una política general de guards para proteger todos los recursos.
+Se incorporó un guard JWT global. Las rutas `/` y `/auth/register` y `/auth/login` son públicas; los demás endpoints exigen un token válido. **Autenticación no equivale a autorización completa:** faltan controles de propiedad para algunos recursos y definir permisos para los listados.
 
 ---
 
@@ -711,7 +718,7 @@ Estos resultados corresponden al estado local comprobado durante el desarrollo. 
 
 ### Funcionalidades pendientes o mejoras futuras
 
-- Implementar autorización mediante guards JWT en las rutas que requieran protección.
+- Ampliar la **autorización por propietario y roles** en todos los recursos: el guard JWT global autentica, pero todavía no limita todos los registros a su propietario.
 - Definir permisos para consultar o modificar información de otros usuarios.
 - Revisar las políticas de seguridad RLS y los permisos de acceso a datos.
 - Completar la integración entre frontend y backend propio.

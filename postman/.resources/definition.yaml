@@ -1,12 +1,7 @@
 $kind: collection
 description: Colección de pruebas de la API REST de CareerPath AI
 variables:
-  baseUrl: http://localhost:3000
-scripts:
-  - type: http:afterResponse
-    code: |-
-      const esperado = pm.request.method === 'POST' ? 201 : 200;
-      pm.test('Estado HTTP esperado', function () {
-        pm.response.to.have.status(esperado);
-      });
-    language: text/javascript
+  baseUrl: http://localhost:4000
+  accessToken: ""
+# Los códigos 200/201/400/401/403/404/409 se validan por caso.
+# No imponer 201 a todo POST: login debe responder 200 y existen pruebas negativas.
