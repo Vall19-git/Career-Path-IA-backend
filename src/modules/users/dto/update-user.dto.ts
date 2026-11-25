@@ -3,13 +3,16 @@ import {
   IsEmail,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
   @IsString({ message: 'El nombre debe ser un texto.' })
+  @Matches(/\S/, { message: 'El nombre no puede estar vacío.' })
   @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
   @MaxLength(120, {
     message: 'El nombre no puede superar los 120 caracteres.',

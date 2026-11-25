@@ -1,11 +1,13 @@
 
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { RegistrationService } from './registration.service.js';
 import { LoginService } from './login.service.js';
 import { RegisterAuthDto } from './dto/register-auth.dto.js';
 import { LoginAuthDto } from './dto/login-auth.dto.js';
+import { Public } from './public.decorator.js';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -19,6 +21,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginAuthDto) {
     return this.loginService.login(dto);
   }

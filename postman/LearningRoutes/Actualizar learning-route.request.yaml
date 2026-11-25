@@ -2,8 +2,9 @@ $kind: http-request
 url: "{{baseUrl}}/learning-routes/1"
 method: PATCH
 headers:
+  Authorization: "Bearer {{accessToken}}"
   Content-Type: application/json
 body:
   type: text
-  content: '{"estado":"Completada","progreso":100}'
+  content: '{"progreso":100}'
 order: 4000

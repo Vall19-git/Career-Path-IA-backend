@@ -1,4 +1,6 @@
 $kind: http-request
 url: "{{baseUrl}}/vocational-tests"
 method: GET
+headers:
+  Authorization: "Bearer {{accessToken}}"
 order: 2000

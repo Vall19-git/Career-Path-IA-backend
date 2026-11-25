@@ -8,6 +8,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
+    process.env.JWT_SECRET ||= 'clave-local-exclusiva-para-pruebas-e2e';
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -21,6 +22,14 @@ describe('AppController (e2e)', () => {
       .get('/')
       .expect(200)
       .expect('Hello World!');
+  });
+
+  it('GET /users sin JWT responde 401', () => {
+    return request(app.getHttpServer()).get('/users').expect(401);
+  });
+
+  it('GET /careers sin JWT responde 401', () => {
+    return request(app.getHttpServer()).get('/careers').expect(401);
   });
 
   afterEach(async () => {

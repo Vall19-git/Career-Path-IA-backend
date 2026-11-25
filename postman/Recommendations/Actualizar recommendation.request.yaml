@@ -2,8 +2,9 @@ $kind: http-request
 url: "{{baseUrl}}/recommendations/1"
 method: PATCH
 headers:
+  Authorization: "Bearer {{accessToken}}"
   Content-Type: application/json
 body:
   type: text
-  content: '{"puntaje":90,"resultado":"Compatibilidad alta"}'
+  content: '{"puntaje":90}'
 order: 4000

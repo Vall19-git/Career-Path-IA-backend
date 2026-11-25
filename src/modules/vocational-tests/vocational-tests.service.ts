@@ -12,7 +12,7 @@ export class VocationalTestsService {
   constructor(private readonly prisma: PrismaService) {}
 
   private validateId(id: number) {
-    if (!Number.isInteger(id) || id <= 0) {
+    if (!Number.isSafeInteger(id) || id <= 0) {
       throw new BadRequestException(
         'El identificador debe ser un número entero positivo',
       );
@@ -26,7 +26,7 @@ export class VocationalTestsService {
   }) {
     return {
       ...question,
-      id: Number(question.id),
+      id: question.id.toString(),
     };
   }
 

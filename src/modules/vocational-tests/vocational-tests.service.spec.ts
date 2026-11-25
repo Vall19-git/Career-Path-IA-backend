@@ -56,7 +56,7 @@ describe('VocationalTestsService', () => {
 
     expect(result).toEqual({
       ...question,
-      id: 1,
+      id: '1',
     });
   });
 
@@ -68,7 +68,7 @@ describe('VocationalTestsService', () => {
     expect(result).toEqual([
       {
         ...question,
-        id: 1,
+        id: '1',
       },
     ]);
   });
@@ -78,7 +78,7 @@ describe('VocationalTestsService', () => {
 
     const result = await service.findOne(1);
 
-    expect(result.id).toBe(1);
+    expect(result.id).toBe('1');
     expect(result.categoria).toBe('Tecnología');
   });
 
@@ -127,7 +127,7 @@ describe('VocationalTestsService', () => {
 
     const result = await service.remove(1);
 
-    expect(result.id).toBe(1);
+    expect(result.id).toBe('1');
   });
 
   it('debe devolver 404 al eliminar una pregunta inexistente', async () => {
